@@ -15,6 +15,8 @@ for (const [name, engine] of [['Chromium', chromium], ['WebKit (Safari engine)',
       assert.equal(await page.locator('.profile:visible').count(), 2, name + ': initial cards');
       await page.locator('#search').fill('CAMILLE');
       assert.equal(await page.locator('.profile:visible').count(), 1, name + ': search');
+      await page.locator('#search').fill('càmille');
+      assert.equal(await page.locator('.profile:visible').count(), 1, name + ': accent-insensitive search');
       await page.locator('#reset').click();
       await page.locator('#status-filter').selectOption('pending');
       assert.equal(await page.locator('.profile:visible').count(), 1, name + ': status filter');
