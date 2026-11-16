@@ -11,7 +11,42 @@ concurrency:
   group: km16-preview-pages
   cancel-in-progress: true
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verifier la maquette et extraire son JavaScript
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class Check(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.scripts=[]; self.inscript=False; self.ids=set()
+              def handle_starttag(self, tag, attrs):
+                  attrs=dict(attrs)
+                  if 'id' in attrs: self.ids.add(attrs['id'])
+                  if tag=='script' and 'src' not in attrs: self.inscript=True
+              def handle_endtag(self, tag):
+                  if tag=='script': self.inscript=False
+              def handle_data(self, data):
+                  if self.inscript: self.scripts.append(data)
+          page=Path('index.html').read_text(encoding='utf-8')
+          parsed=Check(); parsed.feed(page)
+          required={'search','status-filter','reset','cards','count','empty','km16-overview','km16-dossiers','profiles'}
+          assert required <= parsed.ids, f'Missing UI elements: {required-parsed.ids}'
+          assert 'supabase' not in page.lower(), 'Public preview must not connect to Supabase'
+          assert 'app.km16.fr' not in page, 'Public preview must not use production endpoints'
+          assert parsed.scripts, 'Missing interactive script'
+          Path('/tmp/km16-preview-check.js').write_text('\n'.join(parsed.scripts),encoding='utf-8')
+          print('Structure and isolation verified')
+          PY
+          node --check /tmp/km16-preview-check.js
   deploy:
+    needs: validate
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
