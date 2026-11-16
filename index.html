@@ -2,14 +2,44 @@
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KM16 — Prévisualisation de l'interface</title>
 <style>
 :root{font-family:system-ui,-apple-system,sans-serif;color:#192333;background:#f5f7fa}*{box-sizing:border-box}body{margin:0}header{background:#142b42;color:white;padding:22px max(20px,calc((100vw - 1100px)/2))}header h1{margin:0;font-size:1.5rem}header p{margin:8px 0 0;color:#d6e1eb}main{max-width:1100px;margin:28px auto;padding:0 20px}.notice{border-left:4px solid #c48b24;background:#fff7e7;padding:12px 16px;border-radius:5px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:20px}.profile{min-width:0;background:white;border:1px solid #dbe2e9;border-radius:12px;padding:20px;box-shadow:0 2px 10px #122b4010;overflow-wrap:anywhere}.profile h2{margin:0 0 6px;font-size:1.2rem}.muted{color:#526477;font-size:.93rem}.pill{display:inline-block;background:#eaf4ef;color:#186044;border-radius:20px;padding:4px 10px;font-size:.8rem}details{border-top:1px solid #e4e9ee;margin-top:16px;padding-top:14px}summary{cursor:pointer;font-weight:650;min-height:42px;display:flex;align-items:center}button{background:#142b42;color:#fff;border:0;border-radius:8px;min-height:44px;padding:10px 18px;font-weight:600;cursor:pointer}button:focus-visible,summary:focus-visible{outline:3px solid #dc9d32;outline-offset:2px}.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:20px}.toolbar input{min-height:44px;border:1px solid #aab8c5;border-radius:8px;padding:10px 12px;flex:1;min-width:200px}footer{padding:24px 20px;text-align:center;color:#536476;font-size:.85rem}@media(max-width:680px){header{padding:20px}main{margin:20px auto}.grid{grid-template-columns:1fr}.profile{padding:15px}.toolbar{display:block}.toolbar input{width:100%;margin-bottom:10px}.toolbar button{width:100%}}
-</style></head><body>
+ .toolbar select{min-height:44px;border:1px solid #aab8c5;border-radius:8px;padding:9px;background:white}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions button{flex:1}.pill.pending{background:#fff1d6;color:#815300}.count{font-weight:650;margin-top:14px}@media(max-width:680px){.toolbar select{width:100%;margin-bottom:10px}}[hidden]{display:none!important}</style></head><body>
 <header><h1>KM16 · Prévisualisation</h1><p>Maquette de fiches adhérents — environnement indépendant</p></header>
 <main><div class="notice"><strong>Démo publique sans données réelles.</strong> Cette page ne permet ni connexion, ni paiement, ni modification des dossiers KM16.</div>
-<div class="toolbar"><input id="search" type="search" placeholder="Rechercher un profil fictif…" aria-label="Rechercher un profil fictif"><button id="reset" type="button">Réinitialiser</button></div>
-<section class="grid" id="cards" aria-label="Fiches de démonstration">
-<article class="profile" data-name="camille exemple"><h2>Camille Exemple</h2><span class="pill">Dossier fictif</span><p class="muted">Adulte · Saison de démonstration</p><details><summary>Informations générales</summary><p>Identité fictive · Aucune donnée personnelle réelle.</p></details><details><summary>Inscription</summary><p>Statut de démonstration : actif.</p></details></article>
-<article class="profile" data-name="alex test"><h2>Alex Test</h2><span class="pill">Dossier fictif</span><p class="muted">Adolescent · Saison de démonstration</p><details><summary>Informations générales</summary><p>Exemple de fiche responsive.</p></details><details><summary>Inscription</summary><p>Statut de démonstration : à vérifier.</p></details></article>
+<div class="toolbar"><input id="search" type="search" placeholder="Rechercher un profil fictif…" aria-label="Rechercher un profil fictif"><select id="status-filter" aria-label="Filtrer par statut"><option value="all">Tous les statuts</option><option value="active">Actifs</option><option value="pending">À vérifier</option></select><button id="reset" type="button">Réinitialiser</button></div>
+<p class="count" id="count" aria-live="polite">2 fiches fictives affichées</p><section class="grid" id="cards" aria-label="Fiches de démonstration">
+<article class="profile" data-name="camille exemple" data-status="active"><h2>Camille Exemple</h2><span class="pill">Dossier fictif</span><p class="muted">Adulte · Saison de démonstration</p><details><summary>Informations générales</summary><p>Identité fictive · Aucune donnée personnelle réelle.</p></details><details><summary>Inscription</summary><p>Statut de démonstration : actif.</p></details><div class="actions"><button type="button" class="toggle-details" aria-expanded="false">Déplier la fiche</button></div></article>
+<article class="profile" data-name="alex test" data-status="pending"><h2>Alex Test</h2><span class="pill pending">À vérifier · fictif</span><p class="muted">Adolescent · Saison de démonstration</p><details><summary>Informations générales</summary><p>Exemple de fiche responsive.</p></details><details><summary>Inscription</summary><p>Statut de démonstration : à vérifier.</p></details><div class="actions"><button type="button" class="toggle-details" aria-expanded="false">Déplier la fiche</button></div></article>
 </section><p id="empty" hidden>Aucun profil fictif correspondant.</p></main>
 <footer>KM16 — Maquette visuelle isolée. Aucune connexion aux services de production.</footer>
-<script>const q=document.getElementById('search'),cards=[...document.querySelectorAll('.profile')],empty=document.getElementById('empty');function filter(){let count=0;for(const c of cards){const visible=c.dataset.name.includes(q.value.toLocaleLowerCase('fr').trim());c.hidden=!visible;if(visible)count++}empty.hidden=count!==0}q.addEventListener('input',filter);document.getElementById('reset').addEventListener('click',()=>{q.value='';filter();q.focus()});</script>
+<script>
+const q=document.getElementById('search');
+const statusFilter=document.getElementById('status-filter');
+const cards=[...document.querySelectorAll('.profile')];
+const empty=document.getElementById('empty');
+const count=document.getElementById('count');
+function normalize(value){return value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr').trim()}
+function filter(){
+  let visibleCount=0;
+  for(const card of cards){
+    const match=normalize(card.dataset.name).includes(normalize(q.value))&&(statusFilter.value==='all'||card.dataset.status===statusFilter.value);
+    card.hidden=!match;
+    if(match)visibleCount++;
+  }
+  empty.hidden=visibleCount!==0;
+  count.textContent=visibleCount+' fiche'+(visibleCount>1?'s':'')+' fictive'+(visibleCount>1?'s':'')+' affichée'+(visibleCount>1?'s':'');
+}
+q.addEventListener('input',filter);
+statusFilter.addEventListener('change',filter);
+document.getElementById('reset').addEventListener('click',()=>{q.value='';statusFilter.value='all';filter();q.focus()});
+for(const card of cards){
+  const button=card.querySelector('.toggle-details');
+  const details=[...card.querySelectorAll('details')];
+  button.addEventListener('click',()=>{
+    const open=details.some(detail=>!detail.open);
+    for(const detail of details)detail.open=open;
+    button.textContent=open?'Replier la fiche':'Déplier la fiche';
+    button.setAttribute('aria-expanded',String(open));
+  });
+}
+</script>
 </body></html>
