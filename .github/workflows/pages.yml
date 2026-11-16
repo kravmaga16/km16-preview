@@ -45,6 +45,7 @@ jobs:
           print('Structure and isolation verified')
           PY
           node --check /tmp/km16-preview-check.js
+          node tests/preview-interactions.mjs
   deploy:
     needs: validate
     environment:
