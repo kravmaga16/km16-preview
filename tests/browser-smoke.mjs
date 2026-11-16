@@ -26,6 +26,16 @@ for (const [name, engine] of [['Chromium', chromium], ['WebKit (Safari engine)',
       await card.locator('.toggle-details').click();
       assert.equal(await card.locator('details[open]').count(), 0, name + ': collapse');
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), true, name + ': horizontal overflow');
+      const navigation = page.locator('nav.preview-nav a');
+      assert.equal(await navigation.count(), 3, name + ': navigation links');
+      for (const link of await navigation.all()) {
+        const target = await link.getAttribute('href');
+        assert.ok(target?.startsWith('#'), name + ': invalid internal link');
+        assert.equal(await page.locator(target).count(), 1, name + ': missing navigation target ' + target);
+      }
+      await page.locator('#reset').click();
+      assert.equal(await page.locator('#search').inputValue(), '', name + ': reset search');
+      assert.equal(await page.locator('#status-filter').inputValue(), 'all', name + ': reset filter');
       assert.deepEqual(errors, [], name + ': runtime errors');
       await page.screenshot({ path: '/tmp/km16-' + name.split(' ')[0].toLowerCase() + '-' + width + '.png', fullPage: true });
       await page.close();
