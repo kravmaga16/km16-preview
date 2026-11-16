@@ -27,6 +27,7 @@ for (const [name, engine] of [['Chromium', chromium], ['WebKit (Safari engine)',
       assert.equal(await card.locator('details[open]').count(), 0, name + ': collapse');
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), true, name + ': horizontal overflow');
       assert.deepEqual(errors, [], name + ': runtime errors');
+      await page.screenshot({ path: '/tmp/km16-' + name.split(' ')[0].toLowerCase() + '-' + width + '.png', fullPage: true });
       await page.close();
       console.log(name + ' ' + width + 'px: OK');
     }
