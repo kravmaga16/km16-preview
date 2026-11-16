@@ -11,6 +11,8 @@ for(const card of cards){card.hidden=false;card.details=[{open:false},{open:fals
 nodes['status-filter']=node('status-filter');nodes['status-filter'].value='all';
 const document={getElementById:node,querySelectorAll:(selector)=>selector==='.profile'?cards:[]};
 runInNewContext(source,{document});
+assert.equal(node('count').textContent,'','The counter is populated only after the first filter interaction');
+node('search').value='';node('search').listeners.input();
 assert.equal(node('count').textContent,'2 fiches fictives affichées');
 node('search').value='CAMILLE';node('search').listeners.input();
 assert.deepEqual(cards.map(x=>x.hidden),[false,true]);
