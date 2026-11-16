@@ -52,6 +52,14 @@ jobs:
           npx playwright install --with-deps chromium webkit
       - name: Tester l'interface dans Chromium et WebKit
         run: node tests/browser-smoke.mjs
+      - name: Conserver les captures navigateur
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: km16-browser-screenshots
+          path: /tmp/km16-*.png
+          if-no-files-found: ignore
+          retention-days: 7
   deploy:
     needs: validate
     environment:
