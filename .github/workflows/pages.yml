@@ -46,6 +46,12 @@ jobs:
           PY
           node --check /tmp/km16-preview-check.js
           node tests/preview-interactions.mjs
+      - name: Installer les navigateurs de test
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium webkit
+      - name: Tester l'interface dans Chromium et WebKit
+        run: node tests/browser-smoke.mjs
   deploy:
     needs: validate
     environment:
